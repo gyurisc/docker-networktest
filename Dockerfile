@@ -1,13 +1,17 @@
 # Use a Windows Server Core image as the base image
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
-# Download and install curl
-ADD https://curl.se/windows/dl-8.5.0_3/curl-8.5.0_3-win64-mingw.zip C:/temp/curl.zip
-RUN powershell -Command \
-    Expand-Archive C:\temp\curl.zip -DestinationPath C:\temp ; \
-    Move-Item C:\temp\curl-7.79.1-win64-mingw\bin\* C:\Windows\System32\ ; \
-    Remove-Item C:\temp\curl.zip ; \
-    Remove-Item C:\temp\curl-7.79.1-win64-mingw -Recurse
+# Download the MSI installer for PowerShell
+ADD https://github.com/PowerShell/PowerShell/releases/download/v7.4.0/PowerShell-7.4.0-win-x64.msi /powershell.msi
+
+# Install PowerShell
+RUN msiexec.exe /q /i powershell.msi
+
+# Remove the installer
+RUN del /f /q powershell.msi
+
+# Set the default shell to PowerShell
+SHELL ["pwsh", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 # Set the default command to run when starting a container
-CMD ["cmd.exe"]
+CMD ["pwsh"]

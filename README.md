@@ -11,8 +11,8 @@ docker build -t docker-networktest:latest .
 ```
 
 ```bash
-docker run -it --rm windows-with-curl
-curl http://host.docker.internal
+docker run -it --rm docker-networktest:latest
+Invoke-WebRequest -Uri "http://host.docker.internal:8000"
 ```
 
 ### Simple server
